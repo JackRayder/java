@@ -1,0 +1,98 @@
+import java.util.Scanner;
+
+class Calculator{
+    public static void main(String[] args){
+        Scanner input = new Scanner(System.in);
+        Main result = new Main();
+        System.out.println("Введите операцию в формате A + B и т.д.\nПринимаются римские или арабские цифры не больше 10:");
+        String expression = input.nextLine();
+        String answer = result.calc(expression);
+
+
+        System.out.println("Ответ:\n" + answer);
+    }
+}
+
+class Main{
+    public static String calc(String input){
+        boolean romOrArab = false;
+        String exception = "Что-то пошло не так. Введите верную операцию";
+        Main romExamination = new Main();
+        Main arabToRom = new Main();
+        int result = 0;
+        String[] inputSplit = input.split(" ");
+        if (inputSplit.length != 3){
+            return exception;
+        }
+        Integer firstNum = 0;
+        Integer secondNum = 0;
+        try {
+            firstNum = Integer.valueOf(inputSplit[0]);
+            secondNum = Integer.valueOf(inputSplit[2]);
+        } catch (NumberFormatException e) {
+            try {
+                firstNum = romExamination.romToArab(inputSplit[0]);
+                secondNum = romExamination.romToArab(inputSplit[2]);
+                romOrArab = true;
+            } catch (NumberFormatException ex) {
+                return exception;
+            }
+        }
+
+        if ((firstNum < 1) || (firstNum > 10) || (secondNum < 1) || (secondNum > 10)){
+            return exception;
+        }
+
+        String sign = inputSplit[1];
+        switch (sign) {
+            case "+" -> result = firstNum + secondNum;
+            case "-" -> result = firstNum - secondNum;
+            case "*" -> result = firstNum * secondNum;
+            case "/" -> result = firstNum / secondNum;
+            default -> {
+                return exception;
+            }
+        }
+
+        String out;
+
+        if (romOrArab){
+            if(result < 1){
+                return exception;
+            } else {
+                out = arabToRom.arabToRome(result);
+            }
+        } else {
+            out = Integer.toString(result);
+        }
+
+        return out;
+    }
+    String arabToRome(int arabInput){
+        String result = "";
+        int value = 0;
+        int[] arab = {100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] rom = {"C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        for (int i = 0; i < arab.length; i++){
+            value = arabInput / arab[i];
+            for (int j = 0; j < value; j++){
+                result = result.concat(rom[i]);
+            }
+            arabInput = arabInput % arab[i];
+        }
+        return result;
+    }
+    Integer romToArab(String romInput){
+        int result = 0;
+        int[] arab = {10, 9, 5, 4, 1};
+        String[] rom = {"X", "IX", "V", "IV", "I"};
+        for (int i = 0; i < arab.length; i++ ) {
+            while (romInput.indexOf(rom[i]) == 0) {
+                result += arab[i];
+                romInput = romInput.substring(rom[i].length());
+            }
+        }
+
+        return result;
+    }
+}
