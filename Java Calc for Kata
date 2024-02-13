@@ -6,7 +6,12 @@ class Calculator{
         Main result = new Main();
         System.out.println("Введите операцию в формате A + B и т.д.\nПринимаются римские или арабские цифры не больше 10:");
         String expression = input.nextLine();
-        String answer = result.calc(expression);
+        String answer = null;
+        try {
+            answer = result.calc(expression);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
 
         System.out.println("Ответ:\n" + answer);
@@ -14,15 +19,14 @@ class Calculator{
 }
 
 class Main{
-    public static String calc(String input){
+    public static String calc(String input) throws Exception{
         boolean romOrArab = false;
-        String exception = "Что-то пошло не так. Введите верную операцию";
         Main romExamination = new Main();
         Main arabToRom = new Main();
         int result = 0;
         String[] inputSplit = input.split(" ");
         if (inputSplit.length != 3){
-            return exception;
+            throw new Exception("Строка введена неверное");
         }
         Integer firstNum = 0;
         Integer secondNum = 0;
@@ -35,12 +39,12 @@ class Main{
                 secondNum = romExamination.romToArab(inputSplit[2]);
                 romOrArab = true;
             } catch (NumberFormatException ex) {
-                return exception;
+                throw new Exception("Введены неверные числа");
             }
         }
 
         if ((firstNum < 1) || (firstNum > 10) || (secondNum < 1) || (secondNum > 10)){
-            return exception;
+            throw new Exception("Введены неверные числа");
         }
 
         String sign = inputSplit[1];
@@ -50,7 +54,7 @@ class Main{
             case "*" -> result = firstNum * secondNum;
             case "/" -> result = firstNum / secondNum;
             default -> {
-                return exception;
+                throw new Exception("Введена неверная операция");
             }
         }
 
@@ -58,7 +62,7 @@ class Main{
 
         if (romOrArab){
             if(result < 1){
-                return exception;
+                throw new Exception("Такой результат невозможен с римскими цифрами");
             } else {
                 out = arabToRom.arabToRome(result);
             }
